@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { nanoid } from "nanoid";
 import moment from "moment";
+import byteSize from "byte-size";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,7 +16,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
-  ArrowUpDown,
   ChevronDown,
   MoreHorizontal,
   PlusIcon,
@@ -48,7 +47,6 @@ import {
   DialogHeader,
   DialogContent,
   DialogTrigger,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import Dashboard from "@uppy/react/lib/Dashboard";
@@ -58,67 +56,15 @@ import "@uppy/dashboard/dist/style.min.css";
 import { createUppy } from "@/lib/create-uppy";
 import { useDisclosure } from "@/lib/use-disclosure";
 
-const data: DocumentFile[] = [
-  {
-    id: nanoid(),
-    filename: "Document 1",
-    file_url: "https://example.com/document-1.pdf",
-    type: "file",
-    format: "pdf",
-    size: 1024,
-    created_at: "2021-01-01T00:00:00Z",
-    updated_at: "2021-01-01T00:00:00Z",
-  },
-  {
-    id: nanoid(),
-    filename: "Document 2",
-    file_url: "https://example.com/document-2.pdf",
-    type: "file",
-    format: "jpg",
-    size: 2048,
-    created_at: "2021-01-01T00:00:00Z",
-    updated_at: "2021-01-01T00:00:00Z",
-  },
-  {
-    id: nanoid(),
-    filename: "Folder 1",
-    file_url: "https://example.com/folder-1",
-    type: "folder",
-    size: 0,
-    created_at: "2021-01-01T00:00:00Z",
-    updated_at: "2021-01-01T00:00:00Z",
-  },
-  {
-    id: nanoid(),
-    filename: "Document 3",
-    file_url: "https://example.com/document-3.pdf",
-    type: "file",
-    format: "pdf",
-    size: 4096,
-    created_at: "2021-01-01T00:00:00Z",
-    updated_at: "2021-01-01T00:00:00Z",
-  },
-  {
-    id: nanoid(),
-    filename: "Document 4",
-    file_url: "https://example.com/document-4.pdf",
-    type: "file",
-    format: "zip",
-    size: 8192,
-    created_at: "2021-01-01T00:00:00Z",
-    updated_at: "2021-01-01T00:00:00Z",
-  },
-];
-
 export type DocumentFile = {
   id: string;
   filename: string;
   file_url: string;
-  type: "file" | "folder";
+  type: "file" | "folder" | "back";
   format?: string;
   size: number;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 };
 
 export const columns: ColumnDef<DocumentFile>[] = [
@@ -154,35 +100,35 @@ export const columns: ColumnDef<DocumentFile>[] = [
   {
     accessorKey: "size",
     header: ({ column }) => {
+      return <div className="text-right">Size</div>;
+    },
+    cell: ({ row }) => {
+      const formatted = byteSize(row.getValue("size")).toString();
       return (
-        <div className="text-right">
-          <Button
-            className="-mx-4"
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Size
-            <ArrowUpDown />
-          </Button>
+        <div className="text-right font-medium">
+          {row.original.type === "folder"
+            ? "Folder"
+            : row.original.type === "file"
+            ? formatted
+            : ""}
         </div>
       );
     },
-    cell: ({ row }) => (
-      <div className="text-right font-medium">
-        {row.original.type === "file" ? row.getValue("size") : "Folder"}
-      </div>
-    ),
   },
   {
-    accessorKey: "updated_at",
+    accessorKey: "created_at",
     header: () => <div className="text-right">Time</div>,
     cell: ({ row }) => {
-      const time = row.getValue("updated_at");
+      const time = row.getValue("created_at");
 
       // Format the amount as a dollar amount
       const formatted = moment(time as string).format("MMM D, YYYY - HH:mm A");
 
-      return <div className="text-right font-medium">{formatted}</div>;
+      return (
+        <div className="text-right font-medium">
+          {row.original.type === "file" ? formatted : ""}
+        </div>
+      );
     },
   },
   {
@@ -190,6 +136,8 @@ export const columns: ColumnDef<DocumentFile>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
+
+      if (row.original.type === "back") return null;
 
       return (
         <DropdownMenu>
@@ -216,11 +164,20 @@ export const columns: ColumnDef<DocumentFile>[] = [
   },
 ];
 
-export function DataTable() {
+export function DataTable({
+  folder,
+  data,
+  onUploaded,
+}: {
+  folder: string;
+  data: DocumentFile[];
+  onUploaded?: () => void;
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -247,7 +204,7 @@ export function DataTable() {
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <UploadFile />
+        <UploadFile folder={folder} onUploaded={onUploaded} />
         <Button variant={"outline"} className="ml-2">
           <PlusIcon />
           New
@@ -357,10 +314,24 @@ export function DataTable() {
   );
 }
 
-const UploadFile = () => {
-  const [uppy] = React.useState(createUppy);
+const UploadFile = ({
+  folder,
+  onUploaded,
+}: {
+  folder: string;
+  onUploaded?: () => void;
+}) => {
+  const [uppy] = React.useState(createUppy({ folder: folder }));
+  const [isOpen, { close, toggle }] = useDisclosure({
+    onClose: () => uppy.cancelAll(),
+  });
 
-  const [isOpen, { close, toggle }] = useDisclosure();
+  React.useEffect(() => {
+    uppy.setMeta({ folder: folder });
+    uppy.on("complete", () => {
+      onUploaded?.();
+    });
+  }, [folder]);
 
   return (
     <Dialog open={isOpen} onOpenChange={toggle}>
@@ -378,6 +349,8 @@ const UploadFile = () => {
           id="upload-file"
           width={"100%"}
           uppy={uppy}
+          // doneButtonHandler={() => {
+          // }}
           onRequestCloseModal={() => {
             close();
           }}

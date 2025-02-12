@@ -6,8 +6,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import React from "react";
 
-export const DocumentMap = () => {
+export const DocumentMap: React.FC<{ folder: string[] }> = (props) => {
+  const { folder } = props;
+
   return (
     <aside>
       <Breadcrumb>
@@ -15,14 +18,21 @@ export const DocumentMap = () => {
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Home</BreadcrumbPage>
-          </BreadcrumbItem>
+          {folder.map((folder_name, index) => {
+            const isLast = index === folder.length - 1;
+            return (
+              <React.Fragment key={folder_name}>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  {isLast ? (
+                    <BreadcrumbPage>{folder_name}</BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink href="/">{folder_name}</BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
+            );
+          })}
         </BreadcrumbList>
       </Breadcrumb>
     </aside>

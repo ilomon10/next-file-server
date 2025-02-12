@@ -1,0 +1,28 @@
+import { FileOrFolder } from "@/app/api/list_files/route";
+import axios from "axios";
+
+const apiClient = axios.create({
+  baseURL: "http://localhost:3000/api", // Replace with your actual API base URL
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export const getListFiles = async (folder: string) => {
+  try {
+    const response = await apiClient.get<{
+      total: number;
+      data: FileOrFolder[];
+    }>("/list_files", {
+      params: {
+        folder,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error listing files:", error);
+    throw error;
+  }
+};
+
+// You can add more API methods here in the future
