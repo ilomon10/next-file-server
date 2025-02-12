@@ -45,7 +45,7 @@ export const DocumentList: React.FC<{
       if (folder.length > 0)
         result.push({
           id: "back",
-          filename: "..",
+          filename: ". .",
           file_url: prevPath,
           type: "back",
           size: 0,

@@ -13,6 +13,5 @@ export function createUppy(meta?: Metadata) {
   }).use(Tus, {
     endpoint: "http://localhost:3000/api/upload",
     allowedMetaFields: true,
-    // onBeforeRequest: (req, file) => {},
   });
 }
