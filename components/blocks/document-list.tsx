@@ -26,14 +26,16 @@ export const DocumentList: React.FC<{
     queryFn: async () => {
       const files = await getListFiles(folderString);
       const result = files.data.map<DocumentFile>((file) => {
+        let file_url = path.join(baseurl, file.parentPath, file.name);
+
+        if (file.type === "file") {
+          file_url = file_url.replace("tree", "blob");
+        }
+
         return {
           id: file.id,
           filename: file.name,
-          file_url: path.join(
-            file.type === "folder" ? baseurl : "/files",
-            file.parentPath,
-            file.type === "file" ? file.id : file.name
-          ),
+          file_url: file_url,
           type: file.type,
           size: (file as any).size,
           created_at: (file as any).creation_date,

@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Server } from "@tus/server";
 import { FileStore } from "@tus/file-store";
-import { nanoid } from "nanoid";
+import { hashFilename } from "@/lib/hash-filename";
+import { default as node_path } from "node:path";
 
 /**
  * !Important. This will tell Next.js NOT Parse the body as tus requires
@@ -20,10 +21,10 @@ const tusServer = new Server({
   path: path,
   datastore: new FileStore({ directory: "./files" }),
   namingFunction(req, metadata) {
-    const id = nanoid();
-    console.log("naming", metadata);
-    const folder = metadata?.folder || "default";
-    return `${folder}/${id}`;
+    const id = hashFilename(metadata?.filename as string);
+    console.log("naming", id, metadata);
+    const folder = metadata?.folder || "";
+    return node_path.join(folder, id);
   },
   generateUrl(req, options) {
     let { proto, host, path, id } = options;
