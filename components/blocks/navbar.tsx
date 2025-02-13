@@ -22,6 +22,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { APP_NAME, SITE_URL } from "@/lib/constants";
 
 interface MenuItem {
   title: string;
@@ -57,10 +58,10 @@ interface NavbarProps {
 
 const Navbar = ({
   logo = {
-    url: "https://www.example.com",
+    url: SITE_URL || "https://www.example.com",
     src: "https://www.shadcnblocks.com/images/block/block-1.svg",
     alt: "logo",
-    title: "nextjs file server",
+    title: APP_NAME || "nextjs file server",
   },
   menu = [
     { title: "Home", url: "#" },

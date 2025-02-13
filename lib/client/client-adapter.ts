@@ -1,8 +1,9 @@
 import { FileOrFolder } from "@/app/api/list_files/route";
 import axios from "axios";
+import { SITE_URL } from "../constants";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:3000/api", // Replace with your actual API base URL
+  baseURL: `${SITE_URL}/api`, // Replace with your actual API base URL
   headers: {
     "Content-Type": "application/json",
   },
