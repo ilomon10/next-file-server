@@ -66,11 +66,11 @@ const Navbar = ({
     { title: "Home", url: "#" },
     {
       title: "Api",
-      url: "#",
+      url: "/api",
     },
     {
       title: "Health",
-      url: "#",
+      url: "/api/health",
     },
   ],
   mobileExtraLinks = [
