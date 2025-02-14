@@ -26,4 +26,19 @@ export const getListFiles = async (folder: string) => {
   }
 };
 
+export const postFolder = async (folder: string) => {
+  try {
+    const response = await apiClient.post<{
+      total: number;
+      data: FileOrFolder[];
+    }>("/folder", {
+      folder,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating folder:", error);
+    throw error;
+  }
+};
+
 // You can add more API methods here in the future

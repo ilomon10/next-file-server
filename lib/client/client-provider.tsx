@@ -1,11 +1,14 @@
 "use client";
 
 import React from "react";
-import { getListFiles } from "./client-adapter";
+import { getListFiles, postFolder } from "./client-adapter";
 
 interface ClientProps {
   get: {
     listFiles: typeof getListFiles;
+  };
+  post: {
+    folder: typeof postFolder;
   };
 }
 
@@ -16,6 +19,9 @@ export const ClientProvider = ({ children }: { children: React.ReactNode }) => {
     return {
       get: {
         listFiles: getListFiles,
+      },
+      post: {
+        folder: postFolder,
       },
     };
   }, []);

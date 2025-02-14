@@ -56,6 +56,8 @@ import "@uppy/dashboard/dist/style.min.css";
 import { createUppy } from "@/lib/create-uppy";
 import { useDisclosure } from "@/lib/use-disclosure";
 
+import { NewItemButton } from "./new-item-button";
+
 export type DocumentFile = {
   id: string;
   filename: string;
@@ -70,6 +72,7 @@ export type DocumentFile = {
 export const columns: ColumnDef<DocumentFile>[] = [
   {
     id: "select",
+    maxSize: 40,
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -134,6 +137,7 @@ export const columns: ColumnDef<DocumentFile>[] = [
   {
     id: "actions",
     enableHiding: false,
+    maxSize: 40,
     cell: ({ row }) => {
       const payment = row.original;
 
@@ -206,10 +210,7 @@ export function DataTable({
     <div className="w-full">
       <div className="flex items-center py-4">
         <UploadFile folder={folder} onUploaded={onUploaded} />
-        <Button variant={"outline"} className="ml-2">
-          <PlusIcon />
-          New
-        </Button>
+        <NewItemButton folder={folder} onSubmitted={onUploaded} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -244,7 +245,15 @@ export function DataTable({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      style={{
+                        width:
+                          header.getSize() !== 150
+                            ? header.getSize()
+                            : undefined,
+                      }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -332,8 +341,6 @@ const UploadFile = ({
           id="upload-file"
           width={"100%"}
           uppy={uppy}
-          // doneButtonHandler={() => {
-          // }}
           onRequestCloseModal={() => {
             close();
           }}

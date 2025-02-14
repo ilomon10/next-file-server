@@ -6,12 +6,13 @@ export default function Home(props: {
   searchParams: {};
 }) {
   const { folder, username } = props.params;
+  const baseurl = `/${username}/tree`;
 
   return (
     <>
       <main className="container px-4 mx-auto max-w-4xl mt-6">
-        <DocumentMap folder={folder} />
-        <DocumentList baseurl={`/${username}/tree`} folder={folder} />
+        <DocumentMap baseurl={baseurl} folder={folder} />
+        <DocumentList baseurl={baseurl} folder={folder} />
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
     </>
