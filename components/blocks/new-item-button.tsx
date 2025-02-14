@@ -35,6 +35,8 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AxiosError } from "axios";
 import { Separator } from "@/components/ui/separator";
+import { createUppy } from "@/lib/create-uppy";
+import Dashboard from "@uppy/react/lib/Dashboard";
 
 export const NewItemButton: React.FC<{
   folder: string;
@@ -67,7 +69,7 @@ export const NewItemButton: React.FC<{
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant={"outline"} className="ml-2">
+            <Button variant={"outline"}>
               <PlusIcon />
               New
             </Button>
@@ -101,7 +103,7 @@ export const NewItemButton: React.FC<{
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <DialogContent>
+        <DialogContent className="max-w-[750px]">
           {dialog === "new-folder" && (
             <CreateNewFolder
               folder={folder}
@@ -109,8 +111,14 @@ export const NewItemButton: React.FC<{
               onCancel={handleCancel}
             />
           )}
-          {/* {dialog === "upload-file" && <CreateNewFolder />}
-          {dialog === "upload-folder" && <CreateNewFolder />} */}
+          {dialog === "upload-file" && (
+            <UploadFile
+              folder={folder}
+              onSubmitted={handleSubmitted}
+              onCancel={handleCancel}
+            />
+          )}
+          {/* {dialog === "upload-folder" && <CreateNewFolder />} */}
         </DialogContent>
       </Dialog>
     </>
@@ -201,5 +209,37 @@ const CreateNewFolder: React.FC<{
         )}
       </form>
     </Form>
+  );
+};
+
+const UploadFile: React.FC<{
+  folder: string;
+  onCancel?: () => void;
+  onSubmitting?: () => void;
+  onSubmitted?: () => void;
+}> = ({ folder, onSubmitted, onCancel }) => {
+  const [uppy] = React.useState(createUppy({ folder: folder }));
+
+  React.useEffect(() => {
+    uppy.setMeta({ folder: folder });
+    uppy.on("complete", () => {
+      onSubmitted?.();
+    });
+  }, [folder]);
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>Upload file</DialogTitle>
+      </DialogHeader>
+      <Dashboard
+        id="upload-file"
+        width={"100%"}
+        uppy={uppy}
+        onRequestCloseModal={() => {
+          onCancel?.();
+        }}
+      />
+    </>
   );
 };

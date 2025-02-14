@@ -97,24 +97,23 @@ export const columns: ColumnDef<DocumentFile>[] = [
     accessorKey: "filename",
     header: "File Name",
     cell: ({ row }) => (
-      <Link href={row.original.file_url}>{row.getValue("filename")}</Link>
+      <Link href={row.original.file_url} className="block">
+        {row.getValue("filename")}
+      </Link>
     ),
   },
   {
     accessorKey: "size",
-    header: ({ column }) => {
+    header: () => {
       return <div className="text-right">Size</div>;
     },
     cell: ({ row }) => {
       const formatted = byteSize(row.getValue("size")).toString();
+      const value = row.original.type === "folder" ? "Folder" : formatted;
       return (
-        <div className="text-right font-medium">
-          {row.original.type === "folder"
-            ? "Folder"
-            : row.original.type === "file"
-            ? formatted
-            : ""}
-        </div>
+        row.original.type !== "back" && (
+          <div className="text-right font-medium">{value}</div>
+        )
       );
     },
   },
@@ -128,9 +127,11 @@ export const columns: ColumnDef<DocumentFile>[] = [
       const formatted = moment(time as string).format("MMM D, YYYY - HH:mm A");
 
       return (
-        <div className="text-right font-medium">
-          {row.original.type === "file" ? formatted : ""}
-        </div>
+        row.original.type !== "back" && (
+          <div className="text-right font-medium">
+            {row.original.type === "file" ? formatted : ""}
+          </div>
+        )
       );
     },
   },
@@ -139,9 +140,8 @@ export const columns: ColumnDef<DocumentFile>[] = [
     enableHiding: false,
     maxSize: 40,
     cell: ({ row }) => {
-      const payment = row.original;
-
-      if (row.original.type === "back") return null;
+      const item = row.original;
+      if (item.type === "back") return null;
 
       return (
         <DropdownMenu>
@@ -154,13 +154,12 @@ export const columns: ColumnDef<DocumentFile>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(item.id)}
             >
-              Copy payment ID
+              Open
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -209,7 +208,6 @@ export function DataTable({
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <UploadFile folder={folder} onUploaded={onUploaded} />
         <NewItemButton folder={folder} onSubmitted={onUploaded} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -305,47 +303,3 @@ export function DataTable({
     </div>
   );
 }
-
-const UploadFile = ({
-  folder,
-  onUploaded,
-}: {
-  folder: string;
-  onUploaded?: () => void;
-}) => {
-  const [uppy] = React.useState(createUppy({ folder: folder }));
-  const [isOpen, { close, toggle }] = useDisclosure({
-    onClose: () => uppy.cancelAll(),
-  });
-
-  React.useEffect(() => {
-    uppy.setMeta({ folder: folder });
-    uppy.on("complete", () => {
-      onUploaded?.();
-    });
-  }, [folder]);
-
-  return (
-    <Dialog open={isOpen} onOpenChange={toggle}>
-      <DialogTrigger asChild>
-        <Button variant={"outline"}>
-          <UploadIcon />
-          Upload
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-[750px]">
-        <DialogHeader>
-          <DialogTitle>Upload file</DialogTitle>
-        </DialogHeader>
-        <Dashboard
-          id="upload-file"
-          width={"100%"}
-          uppy={uppy}
-          onRequestCloseModal={() => {
-            close();
-          }}
-        />
-      </DialogContent>
-    </Dialog>
-  );
-};
