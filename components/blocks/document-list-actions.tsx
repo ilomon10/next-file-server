@@ -12,7 +12,6 @@ import React from "react";
 import { DocumentFile } from "./data-table";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,

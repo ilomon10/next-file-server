@@ -3,7 +3,6 @@ import { DocumentList } from "@/components/blocks/document-list";
 
 export default function Home(props: {
   params: { folder: string[]; username: string };
-  searchParams: {};
 }) {
   const { folder, username } = props.params;
   const baseurl = `/${username}/tree`;

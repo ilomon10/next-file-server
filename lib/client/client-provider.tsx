@@ -12,6 +12,7 @@ interface ClientProps {
   };
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export const ClientContext = React.createContext<ClientProps>(null as any);
 
 export const ClientProvider = ({ children }: { children: React.ReactNode }) => {

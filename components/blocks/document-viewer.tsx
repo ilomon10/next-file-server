@@ -8,13 +8,14 @@ import DocViewer, {
 
 import "@cyntler/react-doc-viewer/dist/index.css";
 import { Tabs, TabsTrigger, TabsList } from "@/components/ui/tabs";
+import { SITE_URL } from "@/lib/constants";
 
 export const DocumentViewer: React.FC<{
   file_path: string;
 }> = ({ file_path }) => {
   const urls: IDocument[] = [
     {
-      uri: `http://localhost:3000/files/${file_path}`,
+      uri: `${SITE_URL}/files/${file_path}`,
     },
   ];
 

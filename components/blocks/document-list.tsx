@@ -3,7 +3,7 @@
 import React from "react";
 import { DataTable, DocumentFile } from "./data-table";
 import { useQuery } from "@tanstack/react-query";
-import { file_collection, getListFiles } from "@/lib/client/client-adapter";
+import { file_collection } from "@/lib/client/client-adapter";
 import { sortDocuments } from "@/lib/sort-documents";
 import path from "path";
 
@@ -33,14 +33,26 @@ export const DocumentList: React.FC<{
           file_url = file_url.replace("tree", "blob");
         }
 
-        return {
+        const result = {
           id: file.id,
           filename: file.name,
           file_url: file_url,
           type: file.type,
-          size: (file as any).size,
-          created_at: (file as any).creation_date,
         };
+
+        if (file.type === "file") {
+          return {
+            ...result,
+            size: file.size,
+            created_at: file.creation_date,
+          };
+        } else {
+          return {
+            ...result,
+            size: 0,
+            created_at: "",
+          };
+        }
       });
 
       const prevPath = getPreviousPath(`${baseurl}/${folderString}`);

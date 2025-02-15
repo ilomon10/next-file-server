@@ -15,13 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ChevronDown,
-  MoreHorizontal,
-  PlusIcon,
-  Trash2Icon,
-  UploadIcon,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,9 +23,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -43,19 +34,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import {
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { DialogTitle } from "@radix-ui/react-dialog";
-import Dashboard from "@uppy/react/lib/Dashboard";
 
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
-import { createUppy } from "@/lib/create-uppy";
-import { useDisclosure } from "@/lib/use-disclosure";
 
 import { NewItemButton } from "./new-item-button";
 import { DocumentListActions } from "./document-list-actions";
@@ -142,10 +123,11 @@ export const columns: ColumnDef<DocumentFile>[] = [
     id: "actions",
     enableHiding: false,
     maxSize: 40,
-    cell: (props: any) => {
-      const { row, onSubmitted } = props;
+    cell: (props) => {
+      const { row, onSubmitted } = props as typeof props & {
+        onSubmitted: () => void;
+      };
       const item = props.row.original;
-      console.log(props);
       if (item.type === "back") return null;
 
       return (

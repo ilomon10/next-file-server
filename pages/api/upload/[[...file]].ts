@@ -27,8 +27,8 @@ const tusServer = new Server({
     return node_path.join(folder, id);
   },
   generateUrl(req, options) {
-    let { proto, host, path, id } = options;
-    id = Buffer.from(id, "utf-8").toString("base64url");
+    const { proto, host, path } = options;
+    const id = Buffer.from(options.id, "utf-8").toString("base64url");
     // console.log("generateUrl", options, id, `${proto}://${host}${path}/${id}`);
     return `${proto}://${host}${path}/${id}`;
   },
@@ -36,7 +36,9 @@ const tusServer = new Server({
     // lastPath is everything after the last `/`
     // If your custom URL is different, this might be undefined
     // and you need to extract the ID yourself
-    const result = Buffer.from(lastPath as any, "base64url").toString("utf-8");
+    const result = Buffer.from(lastPath as string, "base64url").toString(
+      "utf-8"
+    );
     // console.log("getFileIdFromRequest", lastPath, result);
     return result;
   },
@@ -59,5 +61,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const result = await tusServer.handle(req, res);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   res.status((result as any).status).end();
 }

@@ -1,5 +1,5 @@
 import fs from "fs";
-import { customAlphabet, nanoid } from "nanoid";
+import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
 import path from "path";
 
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     })
     .map((file): FileOrFolder => {
       const type = file.isDirectory() ? "folder" : "file";
-      let parentPath = file.parentPath.split("/").slice(1).join("/");
+      const parentPath = file.parentPath.split("/").slice(1).join("/");
 
       if (type === "folder") {
         return {
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
       const json: JsonMeta = JSON.parse(
         fs.readFileSync(`${file.parentPath}/${file.name}.json`, "utf8")
       );
-      let id = json.id.split("/").pop() as string;
+      const id = json.id.split("/").pop() as string;
 
       return {
         type: "file",

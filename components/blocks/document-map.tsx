@@ -12,7 +12,8 @@ export const DocumentMap: React.FC<{ baseurl: string; folder: string[] }> = (
   props
 ) => {
   const { folder, baseurl } = props;
-  let temp_folder = [];
+  const temp_folder: string[] = [];
+
   return (
     <aside>
       <Breadcrumb>

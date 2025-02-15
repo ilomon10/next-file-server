@@ -19,7 +19,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { postFolder } from "@/lib/client/client-adapter";
 
 import { z } from "zod";
@@ -156,6 +155,8 @@ const CreateNewFolder: React.FC<{
     } catch (err) {
       form.setError("root", {
         type: "manual",
+
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         message: ((err as AxiosError).response?.data as any).message,
       });
     }
@@ -225,7 +226,8 @@ const UploadFile: React.FC<{
     uppy.on("complete", () => {
       onSubmitted?.();
     });
-  }, [folder]);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [folder, onSubmitted]);
 
   return (
     <>

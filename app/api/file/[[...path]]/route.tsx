@@ -44,7 +44,7 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
       })
       .map((file): FileOrFolder => {
         const type = file.type;
-        let parentPath = file.parentPath.split("/").slice(1).join("/");
+        const parentPath = file.parentPath.split("/").slice(1).join("/");
 
         if (type === "folder") {
           return {
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
           fs.readFileSync(`${file.path}.json`, "utf8")
         );
 
-        let id = json.id.split("/").pop() as string;
+        const id = json.id.split("/").pop() as string;
 
         return {
           type: "file",
@@ -79,6 +79,8 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
       { total: files.length, data: files },
       { status: 200 }
     );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     // console.log(err);
     return NextResponse.json(
@@ -159,7 +161,7 @@ function checkFileType(file_path_raw: string[]): {
   let type: "folder" | "file" = "folder";
   const duplicate_file_path_raw = [...file_path_raw];
   let document_name = duplicate_file_path_raw.pop() as string;
-  let parent_path = duplicate_file_path_raw.join("/") as string;
+  const parent_path = duplicate_file_path_raw.join("/") as string;
   let full_path = path.posix.join(parent_path, document_name);
 
   if (fs.existsSync(full_path)) {

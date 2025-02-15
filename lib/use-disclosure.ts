@@ -20,7 +20,10 @@ export const useDisclosure = (props?: {
   const toggle = () => {
     setIsOpen((prev) => {
       const nextState = !prev;
-      nextState ? props?.onOpen?.() : props?.onClose?.();
+
+      if (nextState) props?.onOpen?.();
+      else props?.onClose?.();
+
       return nextState;
     });
   };
