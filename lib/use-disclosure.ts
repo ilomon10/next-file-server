@@ -1,10 +1,11 @@
 import React from "react";
 
 export const useDisclosure = (props?: {
+  initialValue: boolean;
   onOpen?: () => void;
   onClose?: () => void;
 }): [boolean, { open: () => void; close: () => void; toggle: () => void }] => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(props?.initialValue || false);
 
   const open = () => {
     setIsOpen(true);

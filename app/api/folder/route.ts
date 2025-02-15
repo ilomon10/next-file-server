@@ -30,3 +30,30 @@ export async function POST(req: NextRequest) {
 
   return new Response(undefined, { status: 204 });
 }
+
+export async function DELETE(req: NextRequest) {
+  const json: Folder_POST_BODY = await req.json();
+
+  const { folder } = json;
+
+  if (!folder) {
+    return Response.json(
+      { status: 400, message: "Bad request" },
+      { status: 400 }
+    );
+  }
+
+  const folder_path = path.join("files", folder);
+
+  const isExist = fs.existsSync(folder_path);
+  if (!isExist) {
+    return Response.json(
+      { status: 409, message: `Folder named \`${folder}\` not exist.` },
+      { status: 409 }
+    );
+  }
+
+  fs.rmSync(folder_path, { recursive: true, force: true });
+
+  return new Response(undefined, { status: 204 });
+}

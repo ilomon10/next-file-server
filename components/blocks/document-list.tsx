@@ -3,7 +3,7 @@
 import React from "react";
 import { DataTable, DocumentFile } from "./data-table";
 import { useQuery } from "@tanstack/react-query";
-import { getListFiles } from "@/lib/client/client-adapter";
+import { file_collection, getListFiles } from "@/lib/client/client-adapter";
 import { sortDocuments } from "@/lib/sort-documents";
 import path from "path";
 
@@ -24,7 +24,8 @@ export const DocumentList: React.FC<{
   const { data, refetch } = useQuery<DocumentFile[]>({
     queryKey: [folder, "file-list"],
     queryFn: async () => {
-      const files = await getListFiles(folderString);
+      const files = await file_collection().get(folderString);
+
       const result = files.data.map<DocumentFile>((file) => {
         let file_url = path.join(baseurl, file.parentPath, file.name);
 

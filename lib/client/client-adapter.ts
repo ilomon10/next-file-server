@@ -41,4 +41,30 @@ export const postFolder = async (folder: string) => {
   }
 };
 
+export const file_collection = () => {
+  return {
+    async get(folder: string) {
+      try {
+        const response = await apiClient.get<{
+          total: number;
+          data: FileOrFolder[];
+        }>(`/file/${folder}`);
+        return response.data;
+      } catch (error) {
+        console.error("Error listing files:", error);
+        throw error;
+      }
+    },
+    async del(folder: string) {
+      try {
+        const response = await apiClient.delete(`/file/${folder}`);
+        return response.data;
+      } catch (error) {
+        console.error("Error listing files:", error);
+        throw error;
+      }
+    },
+  };
+};
+
 // You can add more API methods here in the future

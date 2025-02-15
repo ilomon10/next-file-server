@@ -19,6 +19,7 @@ import {
   ChevronDown,
   MoreHorizontal,
   PlusIcon,
+  Trash2Icon,
   UploadIcon,
 } from "lucide-react";
 
@@ -57,6 +58,7 @@ import { createUppy } from "@/lib/create-uppy";
 import { useDisclosure } from "@/lib/use-disclosure";
 
 import { NewItemButton } from "./new-item-button";
+import { DocumentListActions } from "./document-list-actions";
 
 export type DocumentFile = {
   id: string;
@@ -83,13 +85,14 @@ export const columns: ColumnDef<DocumentFile>[] = [
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row }) =>
+      row.original.type !== "back" && (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
     enableSorting: false,
     enableHiding: false,
   },
@@ -139,29 +142,14 @@ export const columns: ColumnDef<DocumentFile>[] = [
     id: "actions",
     enableHiding: false,
     maxSize: 40,
-    cell: ({ row }) => {
-      const item = row.original;
+    cell: (props: any) => {
+      const { row, onSubmitted } = props;
+      const item = props.row.original;
+      console.log(props);
       if (item.type === "back") return null;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(item.id)}
-            >
-              Open
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <DocumentListActions onSubmitted={onSubmitted} item={row.original} />
       );
     },
   },
@@ -273,10 +261,10 @@ export function DataTable({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, {
+                        ...cell.getContext(),
+                        onSubmitted: () => onUploaded?.(),
+                      })}
                     </TableCell>
                   ))}
                 </TableRow>
