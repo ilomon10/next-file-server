@@ -12,5 +12,8 @@ export function createUppy(meta?: Metadata) {
   }).use(Tus, {
     endpoint: `${SITE_URL}/api/upload`,
     allowedMetaFields: true,
+    headers: {
+      "X-Forwarded-Proto": "https",
+    },
   });
 }

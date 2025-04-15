@@ -3,6 +3,7 @@ import { Server } from "@tus/server";
 import { FileStore } from "@tus/file-store";
 import { hashFilename } from "@/lib/hash-filename";
 import { default as node_path } from "node:path";
+import CONSTANTS from "@/lib/constants";
 
 /**
  * !Important. This will tell Next.js NOT Parse the body as tus requires
@@ -20,6 +21,9 @@ const tusServer = new Server({
   // `path` needs to match the route declared by the next file router
   path: path,
   datastore: new FileStore({ directory: "./files" }),
+  respectForwardedHeaders: (CONSTANTS.SITE_URL as string).startsWith("https://")
+    ? true
+    : false,
   namingFunction(req, metadata) {
     const id = hashFilename(metadata?.filename as string);
     console.log("naming", id, metadata);
