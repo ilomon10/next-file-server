@@ -11,7 +11,13 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
   file_path_raw = ["files", ...file_path_raw];
 
   try {
-    const file_type = checkFileType(file_path_raw);
+    let file_type = checkFileType(file_path_raw);
+
+    if (file_type === null && file_path_raw.length === 1) {
+      fs.mkdirSync(file_path_raw.join("/"), { recursive: true });
+      file_type = checkFileType(file_path_raw);
+    }
+
     if (file_type === null) {
       throw new Error(
         `File named \`${encodeURI(file_path_raw.join("/"))}\` not exist.`
