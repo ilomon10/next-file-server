@@ -92,7 +92,13 @@ const Navbar = ({
         <nav className="hidden justify-between lg:flex">
           <div className="flex items-center gap-6">
             <a href={logo.url} className="flex items-center gap-2">
-              <Image src={logo.src} className="w-8" alt={logo.alt} />
+              <Image
+                src={logo.src}
+                className="w-8"
+                alt={logo.alt}
+                height={32}
+                width={32}
+              />
               <span className="text-lg font-semibold">{logo.title}</span>
             </a>
             <div className="flex items-center">
@@ -115,7 +121,13 @@ const Navbar = ({
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             <a href={logo.url} className="flex items-center gap-2">
-              <Image src={logo.src} className="w-8" alt={logo.alt} />
+              <Image
+                src={logo.src}
+                className="w-8"
+                alt={logo.alt}
+                height={32}
+                width={32}
+              />
               <span className="text-lg font-semibold">{logo.title}</span>
             </a>
             <Sheet>
@@ -128,7 +140,12 @@ const Navbar = ({
                 <SheetHeader>
                   <SheetTitle>
                     <a href={logo.url} className="flex items-center gap-2">
-                      <Image src={logo.src} className="w-8" alt={logo.alt} />
+                      <Image
+                        src={logo.src}
+                        className="w-8"
+                        alt={logo.alt}
+                        width={32}
+                      />
                       <span className="text-lg font-semibold">
                         {logo.title}
                       </span>
