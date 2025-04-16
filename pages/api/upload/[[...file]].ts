@@ -1,9 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Server } from "@tus/server";
 import { FileStore } from "@tus/file-store";
+import { S3Store } from "@tus/s3-store";
 import { hashFilename } from "@/lib/hash-filename";
 import { default as node_path } from "node:path";
 import CONSTANTS from "@/lib/constants";
+import storage from "@/lib/storage";
 
 /**
  * !Important. This will tell Next.js NOT Parse the body as tus requires
@@ -20,13 +22,12 @@ const path = "/api/upload";
 const tusServer = new Server({
   // `path` needs to match the route declared by the next file router
   path: path,
-  datastore: new FileStore({ directory: "./files" }),
+  datastore: storage.tus_storage,
   respectForwardedHeaders: (CONSTANTS.SITE_URL as string).startsWith("https://")
     ? true
     : false,
   namingFunction(req, metadata) {
     const id = hashFilename(metadata?.filename as string);
-    console.log("naming", id, metadata);
     const folder = metadata?.folder || "";
     return node_path.join(folder, id);
   },
@@ -65,6 +66,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const result = await tusServer.handle(req, res);
+
+  console.log((result as any).message);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   res.status((result as any).status).end();
