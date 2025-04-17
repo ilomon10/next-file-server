@@ -1,7 +1,5 @@
-import fs from "node:fs";
-
 export interface DataStoreDriver {
-  mkdir: (path: string) => Promise<void>;
+  mkdir: (path: string, recursive?: boolean) => Promise<void>;
   readdir: (path: string) => Promise<Dirent[]>;
   readFile: (path: string) => Promise<string>;
   writeFile: (path: string, data: string) => Promise<void>;

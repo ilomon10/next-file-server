@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
 import { hashFilename } from "@/lib/hash-filename";
+import storage, { client_storage } from "@/lib/storage";
+import CONSTANTS from "@/lib/constants";
 
 type METHOD_PARAMS = { params: { path: string[] } };
 
 export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
   let file_path_raw = params.path || [];
-  file_path_raw = ["files", ...file_path_raw];
-
+  file_path_raw = [storage.directory, ...file_path_raw];
   try {
-    let file_type = checkFileType(file_path_raw);
-
+    let file_type = await checkFileType(file_path_raw);
     if (file_type === null && file_path_raw.length === 1) {
-      fs.mkdirSync(file_path_raw.join("/"), { recursive: true });
-      file_type = checkFileType(file_path_raw);
+      await client_storage.mkdir(file_path_raw.join("/"), true);
+      file_type = await checkFileType(file_path_raw);
     }
 
     if (file_type === null) {
@@ -34,21 +33,22 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
         },
       ];
     } else {
-      files_buffer = fs
-        .readdirSync(file_type.path, { withFileTypes: true })
-        .map((f) => ({
+      const readdir = await client_storage.readdir(file_type.path);
+      files_buffer = readdir.map((f) => {
+        return {
           name: f.name,
-          type: f.isDirectory() ? "folder" : "file",
-          path: path.join(f.parentPath, f.name),
-          parentPath: f.parentPath,
-        }));
+          type: f.isDirectory ? "folder" : "file",
+          path: path.posix.join(f.path, f.name),
+          parentPath: f.path,
+        };
+      });
     }
 
-    const files = files_buffer
+    const filesPromise = files_buffer
       .filter((file) => {
-        return path.extname(file.name) !== ".json";
+        return [".info", ".json"].indexOf(path.extname(file.name)) === -1;
       })
-      .map((file): FileOrFolder => {
+      .map(async (file): Promise<FileOrFolder> => {
         const type = file.type;
         const parentPath = file.parentPath.split("/").slice(1).join("/");
 
@@ -61,10 +61,12 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
             parentPath,
           };
         }
-
-        const json: JsonMeta = JSON.parse(
-          fs.readFileSync(`${file.path}.json`, "utf8")
+        const raw_file = await client_storage.readFile(
+          `${file.path}${
+            CONSTANTS.STORAGE_TYPE === "local" ? ".json" : ".info"
+          }`
         );
+        const json: JsonMeta = JSON.parse(raw_file);
 
         const id = json.id.split("/").pop() as string;
 
@@ -81,6 +83,8 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
         };
       });
 
+    const files = await Promise.all(filesPromise);
+
     return NextResponse.json(
       { total: files.length, data: files },
       { status: 200 }
@@ -90,7 +94,7 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
   } catch (err: any) {
     // console.log(err);
     return NextResponse.json(
-      { status: 500, message: err.code || err.message },
+      { status: 500, code: err.code, message: err.message || err.code },
       { status: 500 }
     );
   }
@@ -98,8 +102,7 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
 
 export async function DELETE(req: NextRequest, { params }: METHOD_PARAMS) {
   let file_path_raw = params.path || [];
-  file_path_raw = ["files", ...file_path_raw];
-
+  file_path_raw = [storage.directory, ...file_path_raw];
   if (!params.path) {
     return Response.json(
       { status: 400, message: "Bad request" },
@@ -107,7 +110,7 @@ export async function DELETE(req: NextRequest, { params }: METHOD_PARAMS) {
     );
   }
 
-  const file_type = checkFileType(file_path_raw);
+  const file_type = await checkFileType(file_path_raw);
 
   if (!file_type) {
     return Response.json(
@@ -119,7 +122,7 @@ export async function DELETE(req: NextRequest, { params }: METHOD_PARAMS) {
     );
   }
 
-  fs.rmSync(file_type.path, { recursive: true, force: true });
+  await client_storage.rm(file_type.path, true);
 
   return new Response(undefined, { status: 204 });
 }
@@ -158,26 +161,28 @@ export type FileOrFolder =
       creation_date: string;
     };
 
-function checkFileType(file_path_raw: string[]): {
+async function checkFileType(file_path_raw: string[]): Promise<{
   name: string;
   path: string;
   parentPath: string;
   type: "folder" | "file";
-} | null {
+} | null> {
   let type: "folder" | "file" = "folder";
   const duplicate_file_path_raw = [...file_path_raw];
   let document_name = duplicate_file_path_raw.pop() as string;
   const parent_path = duplicate_file_path_raw.join("/") as string;
   let full_path = path.posix.join(parent_path, document_name);
 
-  if (fs.existsSync(full_path)) {
+  if (await client_storage.exists(full_path)) {
     // Directly found in the expected location
-    type = fs.statSync(full_path).isDirectory() ? "folder" : "file";
+    type = (await client_storage.stat(full_path))?.isDirectory
+      ? "folder"
+      : "file";
   } else {
     document_name = hashFilename(document_name);
     full_path = path.posix.join(parent_path, document_name);
 
-    if (fs.existsSync(full_path)) {
+    if (await client_storage.exists(full_path)) {
       type = "file"; // If the hashed filename exists, it's a file
     } else {
       return null;

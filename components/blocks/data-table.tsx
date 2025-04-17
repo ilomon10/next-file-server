@@ -80,14 +80,25 @@ export const columns: ColumnDef<DocumentFile>[] = [
   {
     accessorKey: "filename",
     header: "File Name",
-    cell: ({ row }) => (
-      <Link href={row.original.file_url} className="block">
-        {row.getValue("filename")}
-      </Link>
-    ),
+    cell: ({ row }) =>
+      row.original.id === "back" ? (
+        <Link href={row.original.file_url} className="block font-medium">
+          {row.getValue("filename")}
+        </Link>
+      ) : (
+        <div>
+          <Link
+            href={row.original.file_url}
+            className="inline-block font-medium"
+          >
+            {row.getValue("filename")}
+          </Link>
+        </div>
+      ),
   },
   {
     accessorKey: "size",
+
     header: () => {
       return <div className="text-right">Size</div>;
     },
@@ -96,7 +107,7 @@ export const columns: ColumnDef<DocumentFile>[] = [
       const value = row.original.type === "folder" ? "Folder" : formatted;
       return (
         row.original.type !== "back" && (
-          <div className="text-right font-medium">{value}</div>
+          <div className="text-right text-muted-foreground">{value}</div>
         )
       );
     },
@@ -112,7 +123,7 @@ export const columns: ColumnDef<DocumentFile>[] = [
 
       return (
         row.original.type !== "back" && (
-          <div className="text-right font-medium">
+          <div className="text-right text-muted-foreground">
             {row.original.type === "file" ? formatted : ""}
           </div>
         )

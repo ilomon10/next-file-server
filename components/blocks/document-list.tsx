@@ -27,7 +27,7 @@ export const DocumentList: React.FC<{
       const files = await file_collection().get(folderString);
 
       const result = files.data.map<DocumentFile>((file) => {
-        let file_url = path.join(baseurl, file.parentPath, file.name);
+        let file_url = path.posix.join(baseurl, file.parentPath, file.name);
 
         if (file.type === "file") {
           file_url = file_url.replace("tree", "blob");

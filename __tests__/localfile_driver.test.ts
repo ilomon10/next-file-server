@@ -2,7 +2,7 @@ import { LocalFileSystemDriver } from "@/lib/data-store/local-file-system";
 
 describe("LocalFile Data Store Driver", () => {
   let datastore = new LocalFileSystemDriver();
-  it("initial constructor", () => {
+  it("initial constructor", async () => {
     expect(datastore).toBeInstanceOf(LocalFileSystemDriver);
   });
 
@@ -16,8 +16,8 @@ describe("LocalFile Data Store Driver", () => {
   });
 
   it("method mkdir()", async () => {
-    await datastore.mkdir("_temp_");
-    await datastore.mkdir("_temp_/temp_dir");
+    await datastore.mkdir("_temp_", true);
+    await datastore.mkdir("_temp_/temp_dir", true);
     const isExists = await datastore.exists("_temp_/temp_dir");
     expect(isExists).toEqual(true);
   });

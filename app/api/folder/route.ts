@@ -1,4 +1,4 @@
-import fs from "fs";
+import storage, { client_storage } from "@/lib/storage";
 import { NextRequest } from "next/server";
 import path from "path";
 
@@ -16,9 +16,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const folder_path = path.join("files", folder);
+  const folder_path = path.posix.join(storage.directory, folder);
 
-  const isExist = fs.existsSync(folder_path);
+  const isExist = await client_storage.exists(folder_path);
   if (isExist) {
     return Response.json(
       { status: 409, message: `Folder named \`${folder}\` already exist.` },
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  fs.mkdirSync(folder_path, { recursive: true });
+  await client_storage.mkdir(folder_path, true);
 
   return new Response(undefined, { status: 204 });
 }
@@ -43,9 +43,9 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
-  const folder_path = path.join("files", folder);
+  const folder_path = path.posix.join(storage.directory, folder);
 
-  const isExist = fs.existsSync(folder_path);
+  const isExist = await client_storage.exists(folder_path);
   if (!isExist) {
     return Response.json(
       { status: 409, message: `Folder named \`${folder}\` not exist.` },
@@ -53,7 +53,7 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
-  fs.rmSync(folder_path, { recursive: true, force: true });
+  await client_storage.rm(folder_path, true);
 
   return new Response(undefined, { status: 204 });
 }

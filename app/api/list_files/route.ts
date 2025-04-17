@@ -1,4 +1,5 @@
-import fs from "fs";
+import CONSTANTS from "@/lib/constants";
+import { client_storage } from "@/lib/storage";
 import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
 import path from "path";
@@ -40,14 +41,14 @@ export type FileOrFolder =
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const folder = searchParams.get("folder");
-  const files = fs
-    .readdirSync(`files/${folder}`, { withFileTypes: true })
+  let filesSync = await client_storage.readdir(`files/${folder}`);
+  let filesPromise = filesSync
     .filter((file) => {
-      return path.extname(file.name) !== ".json";
+      return [".info", ".json"].indexOf(path.extname(file.name)) === -1;
     })
-    .map((file): FileOrFolder => {
-      const type = file.isDirectory() ? "folder" : "file";
-      const parentPath = file.parentPath.split("/").slice(1).join("/");
+    .map(async (file): Promise<FileOrFolder> => {
+      const type = file.isDirectory ? "folder" : "file";
+      const parentPath = file.path.split("/").slice(1).join("/");
 
       if (type === "folder") {
         return {
@@ -59,9 +60,13 @@ export async function GET(req: NextRequest) {
         };
       }
 
-      const json: JsonMeta = JSON.parse(
-        fs.readFileSync(`${file.parentPath}/${file.name}.json`, "utf8")
+      const raw_file = await client_storage.readFile(
+        `${file.path}/${file.name}${
+          CONSTANTS.STORAGE_TYPE === "local" ? ".json" : ".info"
+        }`
       );
+
+      const json: JsonMeta = JSON.parse(raw_file);
       const id = json.id.split("/").pop() as string;
 
       return {
@@ -76,6 +81,8 @@ export async function GET(req: NextRequest) {
         creation_date: json.creation_date,
       };
     });
+
+  const files = await Promise.all(filesPromise);
 
   return Response.json({ total: files.length, data: files }, { status: 200 });
 }

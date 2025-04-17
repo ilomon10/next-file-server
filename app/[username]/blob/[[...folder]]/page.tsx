@@ -11,6 +11,7 @@ export default function Home(props: {
     <>
       <main className="container px-4 mx-auto max-w-4xl mt-6">
         <DocumentMap baseurl={`/${username}/tree`} folder={folder || []} />
+        <div className="pt-4" />
         <DocumentViewer file_path={file_path} />
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>

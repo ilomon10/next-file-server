@@ -7,8 +7,8 @@ export class LocalFileSystemDriver implements DataStoreDriver {
     // Initialize the driver if needed
   }
 
-  async mkdir(path: string) {
-    fs.mkdirSync(path, { recursive: true });
+  async mkdir(path: string, recursive?: boolean) {
+    fs.mkdirSync(path, { recursive: recursive || false });
   }
 
   async readdir(path: string) {

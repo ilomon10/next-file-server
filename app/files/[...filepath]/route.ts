@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import fsPromises from "fs/promises";
-import fs from "fs";
 import path from "path";
 import { hashFilename } from "@/lib/hash-filename";
+import storage, { client_storage } from "@/lib/storage";
+import CONSTANTS from "@/lib/constants";
 
 export const GET = async (
   req: NextRequest,
@@ -14,19 +14,21 @@ export const GET = async (
 
   const hashed_filename = hashFilename(file_name);
 
-  const bin_filepath = path.join(
-    "files",
+  const bin_filepath = path.posix.join(
+    storage.directory,
     ...full_path.reverse(),
     hashed_filename
   );
-  const json_filepath = `${bin_filepath}.json`;
-
-  const { metadata } = JSON.parse(fs.readFileSync(json_filepath, "utf-8"));
+  const json_filepath = `${bin_filepath}${
+    CONSTANTS.STORAGE_TYPE === "local" ? ".json" : ".info"
+  }`;
+  const raw_file = await client_storage.readFile(json_filepath);
+  const { metadata } = JSON.parse(raw_file);
 
   const fileName = metadata.filename || "downloaded-file";
   const mimeType = metadata.filetype || "application/octet-stream";
 
-  const fileContent = await fsPromises.readFile(bin_filepath);
+  const fileContent = await client_storage.readFile(bin_filepath);
 
   return new NextResponse(fileContent, {
     status: 200,

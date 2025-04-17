@@ -24,6 +24,7 @@ export class MinioDriver implements DataStoreDriver {
   private client: MinioClient;
 
   async mkdir(path: string) {
+    console.log(path);
     await this.client.putObject(
       this.bucket,
       `${path}/.placeholder`,
@@ -34,19 +35,23 @@ export class MinioDriver implements DataStoreDriver {
   async readdir(path: string) {
     let result: Dirent[] = [];
     const items = await this._listObjectsV2(`${path}/`);
-    items.forEach((item) => {
-      let _item = this._checkThisPath(item);
-
-      result.push(
-        new Dirent({
-          name: _item.name,
-          size: item.size,
-          path: _item.path,
-          isFile: _item.isFile,
-          isDirectory: _item.isDirectory,
-        })
-      );
-    });
+    items
+      .filter((item) => {
+        if (!item.name) return true;
+        return (item.name as string).indexOf(".placeholder") < 0;
+      })
+      .forEach((item) => {
+        let _item = this._checkThisPath(item);
+        result.push(
+          new Dirent({
+            name: _item.name,
+            size: item.size,
+            path: _item.path,
+            isFile: _item.isFile,
+            isDirectory: _item.isDirectory,
+          })
+        );
+      });
     return result;
   }
 
@@ -109,6 +114,7 @@ export class MinioDriver implements DataStoreDriver {
 
   private _checkThisPath(item: BucketItem) {
     let isFile = item.size > 0;
+    const name = item.name?.split("/") as string[];
     const path = item.prefix?.replace(/\/+$/, "").split("/") as string[];
 
     const result = {
@@ -119,8 +125,8 @@ export class MinioDriver implements DataStoreDriver {
     };
 
     if (isFile) {
-      result.name = item.name as string;
-      result.path = item.prefix as string;
+      result.name = name[name.length - 1];
+      result.path = name.slice(0, -1).join("/") + "/";
     } else {
       result.name = path[path.length - 1];
       result.path = path.slice(0, -1).join("/") + "/";

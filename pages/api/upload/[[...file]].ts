@@ -29,7 +29,7 @@ const tusServer = new Server({
   namingFunction(req, metadata) {
     const id = hashFilename(metadata?.filename as string);
     const folder = metadata?.folder || "";
-    return node_path.join(folder, id);
+    return node_path.posix.join(storage.directory, folder, id);
   },
   generateUrl(req, options) {
     const { proto, host, path } = options;
