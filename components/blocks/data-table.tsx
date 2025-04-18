@@ -316,7 +316,7 @@ const DummyDocumentFiles: DocumentFile[] = Array.from(
   { length: 3 },
   (_, i): DocumentFile => {
     return {
-      id: "loading",
+      id: `${i}`,
       filename: "Loading...",
       file_url: "",
       type: "file",

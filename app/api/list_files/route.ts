@@ -41,8 +41,8 @@ export type FileOrFolder =
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const folder = searchParams.get("folder");
-  let filesSync = await client_storage.readdir(`files/${folder}`);
-  let filesPromise = filesSync
+  const filesSync = await client_storage.readdir(`files/${folder}`);
+  const filesPromise = filesSync
     .filter((file) => {
       return [".info", ".json"].indexOf(path.extname(file.name)) === -1;
     })

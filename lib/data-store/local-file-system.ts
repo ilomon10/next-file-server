@@ -45,7 +45,7 @@ export class LocalFileSystemDriver implements DataStoreDriver {
     let stat;
     try {
       stat = fs.statSync(path);
-    } catch (err) {
+    } catch {
       return undefined;
     }
     return {

@@ -1,4 +1,4 @@
-import { BucketItem, Client as MinioClient } from "minio";
+import { BucketItem, Client as MinioClient, S3Error } from "minio";
 import CONSTANTS from "../constants";
 import { DataStoreDriver, Dirent } from "./driver";
 
@@ -28,7 +28,7 @@ export class MinioDriver implements DataStoreDriver {
   }
 
   async readdir(path: string) {
-    let result: Dirent[] = [];
+    const result: Dirent[] = [];
     const items = await this._listObjectsV2(`${path}/`);
     items
       .filter((item) => {
@@ -36,7 +36,7 @@ export class MinioDriver implements DataStoreDriver {
         return (item.name as string).indexOf(".placeholder") < 0;
       })
       .forEach((item) => {
-        let _item = this._checkThisPath(item);
+        const _item = this._checkThisPath(item);
         result.push(
           new Dirent({
             name: _item.name,
@@ -56,7 +56,7 @@ export class MinioDriver implements DataStoreDriver {
   async readFile(path: string, encoding: BufferEncoding | null = null) {
     return await new Promise<Buffer | string>(async (resolve, reject) => {
       const stream = await this.client.getObject(this.bucket, path);
-      let data: Buffer[] = [];
+      const data: Buffer[] = [];
       stream.on("data", (chunk: Buffer) => {
         data.push(chunk);
       });
@@ -103,8 +103,10 @@ export class MinioDriver implements DataStoreDriver {
       const item = await this.stat(path);
       // console.log(item);
       return typeof item !== "undefined";
-    } catch (error: any) {
-      if (["NotFound", "NoSuchKey"].indexOf(error.code) > -1) {
+    } catch (error: unknown) {
+      const errorCode: string =
+        error instanceof S3Error ? (error.code as string) : "Unknown error";
+      if (["NotFound", "NoSuchKey"].indexOf(errorCode) > -1) {
         return false;
       }
       throw error; // Rethrow if it's not a "NoSuchKey" error
@@ -118,7 +120,7 @@ export class MinioDriver implements DataStoreDriver {
   }
 
   private _checkThisPath(item: BucketItem) {
-    let isFile = item.size > 0;
+    const isFile = item.size > 0;
     const name = item.name?.split("/") as string[];
     const path = item.prefix?.replace(/\/+$/, "").split("/") as string[];
 
@@ -141,7 +143,7 @@ export class MinioDriver implements DataStoreDriver {
   }
 
   private async _listObjectsV2(path: string, recursive?: boolean) {
-    let result: BucketItem[] = [];
+    const result: BucketItem[] = [];
     await new Promise((resolve, reject) => {
       const stream = this.client.listObjectsV2(this.bucket, path, recursive);
       stream.on("end", () => {

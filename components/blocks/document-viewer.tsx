@@ -42,7 +42,7 @@ export const DocumentViewer: React.FC<{
         </div>
         <div>
           {supported_type.map((v) => {
-            let result: any = "Not Found";
+            let result: React.ReactNode = "Not Found";
             switch (v) {
               case "preview":
                 result = (

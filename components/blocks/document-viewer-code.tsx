@@ -11,12 +11,14 @@ export const DocumentViewerCode: React.FC<{
       try {
         const code = await fetchRemoteFile(document.uri);
         setCode(code);
-      } catch (err: any) {
-        setCode(`⚠️ Failed to load file: ${err.message}`);
+      } catch (err: unknown) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error";
+        setCode(`⚠️ Failed to load file: ${errorMessage}`);
       }
     };
     fetchCode();
-  }, []);
+  }, [document.uri]);
 
   return (
     <CodeToBlock language={"html"} theme={"github-light"}>

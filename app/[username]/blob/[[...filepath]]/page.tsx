@@ -1,6 +1,6 @@
 import { DocumentMap } from "@/components/blocks/document-map";
 import { DocumentViewer } from "@/components/blocks/document-viewer";
-import { file_collection, getFileMetadata } from "@/lib/client/client-adapter";
+import { file_collection } from "@/lib/client/client-adapter";
 import byteSize from "byte-size";
 import { Metadata } from "next";
 
