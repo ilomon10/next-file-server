@@ -20,9 +20,10 @@ const tusServer = new Server({
   // `path` needs to match the route declared by the next file router
   path: path,
   datastore: storage.tus_storage,
-  respectForwardedHeaders: (CONSTANTS.SITE_URL as string).startsWith("https://")
-    ? true
-    : false,
+  // respectForwardedHeaders: (CONSTANTS.SITE_URL as string).startsWith("https://")
+  //   ? true
+  //   : false,
+  respectForwardedHeaders: true,
   namingFunction(req, metadata) {
     const id = hashFilename(metadata?.filename as string);
     const folder = metadata?.folder || "";
