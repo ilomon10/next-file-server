@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  // output: "standalone",
   env: {
     SITE_URL: process.env.SITE_URL,
     APP_NAME: process.env.APP_NAME,

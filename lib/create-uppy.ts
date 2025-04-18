@@ -14,6 +14,7 @@ export function createUppy(meta?: Metadata) {
     allowedMetaFields: true,
     headers: {
       "X-Forwarded-Proto": SITE_PROTO,
+      "X-Real-Proto": SITE_PROTO,
     },
   });
 }

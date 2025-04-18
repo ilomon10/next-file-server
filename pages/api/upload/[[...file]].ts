@@ -29,7 +29,8 @@ const tusServer = new Server({
   generateUrl(req, options) {
     const { proto, host, path } = options;
     const id = Buffer.from(options.id, "utf-8").toString("base64url");
-    const protocol = req.headers["x-forwarded-proto"] || proto;
+    const protocol =
+      req.headers["x-real-proto"] || req.headers["x-forwarded-proto"] || proto;
     console.log(
       "generateUrl",
       protocol,
