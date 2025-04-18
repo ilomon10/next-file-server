@@ -13,65 +13,59 @@ import { DocumentViewerCode } from "./document-viewer-code";
 
 export const DocumentViewer: React.FC<{
   file_path: string;
-}> = ({ file_path }) => {
-  const file_type = file_path.split(".").pop() || "text";
+  description?: React.ReactNode;
+}> = ({ file_path, description }) => {
+  const file_type = file_path.split(".").pop() || "txt";
   const urls: IDocument[] = [
     {
-      uri: `${SITE_URL}/files/${file_path}`,
+      uri: `${SITE_URL}/files/blob/${file_path}`,
       fileType: file_type,
     },
   ];
 
-  const supported_type = SUPPORTED_TYPE[file_type] ?? [];
+  const supported_type = SUPPORTED_TYPE[file_type] ?? SUPPORTED_TYPE["txt"];
 
   return (
-    <Tabs defaultValue={supported_type[0] ?? "blame"}>
+    <Tabs defaultValue={supported_type[0] ?? "preview"}>
       <div className="rounded-md border">
-        <div className="border-b p-2 flex">
-          <TabsList>
+        <div className="border-b p-2 flex items-center">
+          <TabsList className="mr-2">
             {supported_type.map((v) => {
-              switch (v) {
-                case "code":
-                  return (
-                    <TabsTrigger key={v} value="code">
-                      Code
-                    </TabsTrigger>
-                  );
-                case "preview":
-                  return (
-                    <TabsTrigger key={v} value="preview">
-                      Preview
-                    </TabsTrigger>
-                  );
-                default:
-                  return null;
-              }
+              return (
+                <TabsTrigger key={v} value={v} className="capitalize">
+                  {v}
+                </TabsTrigger>
+              );
             })}
-            <TabsTrigger value="blame">Blame</TabsTrigger>
           </TabsList>
-          <span>{file_path}</span>
+          {description}
         </div>
         <div>
           {supported_type.map((v) => {
+            let result: any = "Not Found";
             switch (v) {
-              case "code":
-                return (
-                  <TabsContent key={v} value="code">
-                    <DocumentViewerCode document={urls[0]} />
-                  </TabsContent>
-                );
               case "preview":
-                return (
-                  <TabsContent key={v} value="preview">
-                    <DocViewer
-                      documents={urls}
-                      pluginRenderers={DocViewerRenderers}
-                    />
-                  </TabsContent>
+                result = (
+                  <DocViewer
+                    documents={urls}
+                    initialActiveDocument={urls[0]}
+                    pluginRenderers={DocViewerRenderers}
+                  />
                 );
-              default:
-                return null;
+                break;
+              case "code":
+                result = <DocumentViewerCode document={urls[0]} />;
+                break;
+              case "blame":
+                result = "Blame";
+                break;
             }
+
+            return (
+              <TabsContent key={v} value={v}>
+                {result}
+              </TabsContent>
+            );
           })}
         </div>
       </div>
@@ -85,4 +79,8 @@ const SUPPORTED_TYPE: {
   html: ["code"],
   jpeg: ["preview"],
   png: ["preview"],
+  wav: ["preview"],
+  mp3: ["preview"],
+  rar: ["preview"],
+  txt: ["code"],
 };

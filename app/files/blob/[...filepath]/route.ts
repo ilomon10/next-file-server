@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
 import { hashFilename } from "@/lib/hash-filename";
 import storage, { client_storage } from "@/lib/storage";
 import CONSTANTS from "@/lib/constants";

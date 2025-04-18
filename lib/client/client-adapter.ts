@@ -48,7 +48,7 @@ export const file_collection = () => {
         const response = await apiClient.get<{
           total: number;
           data: FileOrFolder[];
-        }>(`/file/${folder}`);
+        }>(`/files/${folder}`);
         return response.data;
       } catch (error) {
         console.error("Error listing files:", error);
@@ -57,7 +57,7 @@ export const file_collection = () => {
     },
     async del(folder: string) {
       try {
-        const response = await apiClient.delete(`/file/${folder}`);
+        const response = await apiClient.delete(`/files/${folder}`);
         return response.data;
       } catch (error) {
         console.error("Error listing files:", error);

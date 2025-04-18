@@ -15,7 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FileIcon, FolderIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -40,6 +40,8 @@ import "@uppy/dashboard/dist/style.min.css";
 
 import { NewItemButton } from "./new-item-button";
 import { DocumentListActions } from "./document-list-actions";
+import { Skeleton } from "../ui/skeleton";
+import { cx } from "class-variance-authority";
 
 export type DocumentFile = {
   id: string;
@@ -80,21 +82,24 @@ export const columns: ColumnDef<DocumentFile>[] = [
   {
     accessorKey: "filename",
     header: "File Name",
-    cell: ({ row }) =>
-      row.original.id === "back" ? (
-        <Link href={row.original.file_url} className="block font-medium">
+    cell: ({ row }) => (
+      <div className="flex items-center">
+        {row.original.type === "folder" ? (
+          <FolderIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+        ) : (
+          <FileIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+        )}
+        <Link
+          href={row.original.file_url}
+          className={cx(
+            row.original.id === "back" && "w-full",
+            "hover:underline"
+          )}
+        >
           {row.getValue("filename")}
         </Link>
-      ) : (
-        <div>
-          <Link
-            href={row.original.file_url}
-            className="inline-block font-medium"
-          >
-            {row.getValue("filename")}
-          </Link>
-        </div>
-      ),
+      </div>
+    ),
   },
   {
     accessorKey: "size",
@@ -149,10 +154,12 @@ export const columns: ColumnDef<DocumentFile>[] = [
 ];
 
 export function DataTable({
+  isLoading,
   folder,
   data,
   onUploaded,
 }: {
+  isLoading?: boolean;
   folder: string;
   data: DocumentFile[];
   onUploaded?: () => void;
@@ -167,7 +174,7 @@ export function DataTable({
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: isLoading ? DummyDocumentFiles : data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -252,14 +259,34 @@ export function DataTable({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, {
-                        ...cell.getContext(),
-                        onSubmitted: () => onUploaded?.(),
-                      })}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell, _, cells) => {
+                    if (
+                      row.original.id === "back" &&
+                      ["select", "filename"].indexOf(cell.column.id) === -1
+                    ) {
+                      return null;
+                    }
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        colSpan={
+                          row.original.id === "back" &&
+                          cell.column.id === "filename"
+                            ? cells.length - 1
+                            : undefined
+                        }
+                      >
+                        {isLoading ? (
+                          <Skeleton className="h-4" />
+                        ) : (
+                          flexRender(cell.column.columnDef.cell, {
+                            ...cell.getContext(),
+                            onSubmitted: () => onUploaded?.(),
+                          })
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -284,3 +311,17 @@ export function DataTable({
     </div>
   );
 }
+
+const DummyDocumentFiles: DocumentFile[] = Array.from(
+  { length: 3 },
+  (_, i): DocumentFile => {
+    return {
+      id: "loading",
+      filename: "Loading...",
+      file_url: "",
+      type: "file",
+      size: 0,
+      created_at: "",
+    };
+  }
+);

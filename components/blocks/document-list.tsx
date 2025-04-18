@@ -21,7 +21,7 @@ export const DocumentList: React.FC<{
   const { folder, baseurl } = props;
   const folderString = folder.join("/");
 
-  const { data, refetch } = useQuery<DocumentFile[]>({
+  const { data, refetch, isLoading } = useQuery<DocumentFile[]>({
     queryKey: [folder, "file-list"],
     queryFn: async () => {
       const files = await file_collection().get(folderString);
@@ -78,6 +78,11 @@ export const DocumentList: React.FC<{
   };
 
   return (
-    <DataTable onUploaded={onUpload} data={data || []} folder={folderString} />
+    <DataTable
+      onUploaded={onUpload}
+      data={data || []}
+      folder={folderString}
+      isLoading={isLoading}
+    />
   );
 };
