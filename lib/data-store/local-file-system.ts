@@ -23,8 +23,11 @@ export class LocalFileSystemDriver implements DataStoreDriver {
     });
   }
 
-  async readFile(path: string) {
-    return fs.readFileSync(path, "utf-8");
+  readFile(path: string): Promise<Buffer>;
+  readFile(path: string, encoding: BufferEncoding): Promise<string>;
+
+  async readFile(path: string, encoding: BufferEncoding | null = null) {
+    return fs.readFileSync(path, encoding);
   }
 
   async writeFile(filepath: string, data: string) {

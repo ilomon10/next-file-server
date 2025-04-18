@@ -63,7 +63,8 @@ export async function GET(req: NextRequest) {
       const raw_file = await client_storage.readFile(
         `${file.path}/${file.name}${
           CONSTANTS.STORAGE_TYPE === "local" ? ".json" : ".info"
-        }`
+        }`,
+        "utf-8"
       );
 
       const json: JsonMeta = JSON.parse(raw_file);

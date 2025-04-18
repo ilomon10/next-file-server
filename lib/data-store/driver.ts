@@ -1,7 +1,8 @@
+type Encoding = BufferEncoding | null;
 export interface DataStoreDriver {
   mkdir: (path: string, recursive?: boolean) => Promise<void>;
   readdir: (path: string) => Promise<Dirent[]>;
-  readFile: (path: string) => Promise<string>;
+  readFile: (path: string, encoding?: Encoding) => Promise<string | Buffer>;
   writeFile: (path: string, data: string) => Promise<void>;
   exists: (path: string) => Promise<boolean>;
   stat: (path: string) => Promise<ItemStat | undefined>;

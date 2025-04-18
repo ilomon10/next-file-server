@@ -18,7 +18,7 @@ export const GET = async (
   const json_filepath = `${bin_filepath}${
     CONSTANTS.STORAGE_TYPE === "local" ? ".json" : ".info"
   }`;
-  const raw_file = await client_storage.readFile(json_filepath);
+  const raw_file = await client_storage.readFile(json_filepath, "utf-8");
   const { metadata } = JSON.parse(raw_file);
 
   const fileName = metadata.filename || "downloaded-file";

@@ -10,11 +10,13 @@ describe("Minio Data Store Driver", () => {
 
   it("method writeFile()", async () => {
     await datastore.writeFile("_temp_/test.txt", "Hello World");
-    expect(await datastore.readFile("_temp_/test.txt")).toEqual("Hello World");
-    await datastore.writeFile("_temp_/deepinside/test.txt", "Hello World");
-    expect(await datastore.readFile("_temp_/deepinside/test.txt")).toEqual(
+    expect(await datastore.readFile("_temp_/test.txt", "utf-8")).toEqual(
       "Hello World"
     );
+    await datastore.writeFile("_temp_/deepinside/test.txt", "Hello World");
+    expect(
+      await datastore.readFile("_temp_/deepinside/test.txt", "utf-8")
+    ).toEqual("Hello World");
   });
 
   it("method mkdir()", async () => {

@@ -50,14 +50,24 @@ export class MinioDriver implements DataStoreDriver {
     return result;
   }
 
-  async readFile(path: string) {
-    return await new Promise<string>(async (resolve, reject) => {
+  readFile(path: string): Promise<Buffer>;
+  readFile(path: string, encoding: BufferEncoding): Promise<string>;
+
+  async readFile(path: string, encoding: BufferEncoding | null = null) {
+    return await new Promise<Buffer | string>(async (resolve, reject) => {
       const stream = await this.client.getObject(this.bucket, path);
-      let data = "";
+      let data: Buffer[] = [];
       stream.on("data", (chunk: Buffer) => {
-        data += chunk.toString("utf-8");
+        data.push(chunk);
       });
-      stream.on("end", () => resolve(data));
+      stream.on("end", () => {
+        const buffer = Buffer.concat(data);
+        if (encoding) {
+          resolve(buffer.toString(encoding));
+        } else {
+          resolve(buffer);
+        }
+      });
       stream.on("error", reject);
     });
   }
