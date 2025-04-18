@@ -1,6 +1,6 @@
 import Uppy, { Meta } from "@uppy/core";
 import Tus from "@uppy/tus";
-import { SITE_URL } from "./constants";
+import { SITE_URL, SITE_PROTO } from "./constants";
 
 export type Metadata = Meta & {
   folder?: string;
@@ -13,7 +13,7 @@ export function createUppy(meta?: Metadata) {
     endpoint: `${SITE_URL}/api/upload`,
     allowedMetaFields: true,
     headers: {
-      "X-Forwarded-Proto": "https",
+      "X-Forwarded-Proto": SITE_PROTO,
     },
   });
 }

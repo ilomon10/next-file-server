@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Server } from "@tus/server";
 import { hashFilename } from "@/lib/hash-filename";
-// import CONSTANTS from "@/lib/constants";
+import CONSTANTS from "@/lib/constants";
 import storage from "@/lib/storage";
 
 /**
@@ -20,10 +20,7 @@ const tusServer = new Server({
   // `path` needs to match the route declared by the next file router
   path: path,
   datastore: storage.tus_storage,
-  // respectForwardedHeaders: (CONSTANTS.SITE_URL as string).startsWith("https://")
-  //   ? true
-  //   : false,
-  respectForwardedHeaders: true,
+  respectForwardedHeaders: CONSTANTS.SITE_PROTO === "https" ? true : false,
   namingFunction(req, metadata) {
     const id = hashFilename(metadata?.filename as string);
     const folder = metadata?.folder || "";
@@ -32,7 +29,14 @@ const tusServer = new Server({
   generateUrl(req, options) {
     const { proto, host, path } = options;
     const id = Buffer.from(options.id, "utf-8").toString("base64url");
-    return `${proto}://${host}${path}/${id}`;
+    const protocol = req.headers["x-forwarded-proto"] || proto;
+    console.log(
+      "generateUrl",
+      protocol,
+      { proto, host, path, id },
+      req.headers
+    );
+    return `${protocol}://${host}${path}/${id}`;
   },
   getFileIdFromRequest(req, lastPath) {
     // lastPath is everything after the last `/`
