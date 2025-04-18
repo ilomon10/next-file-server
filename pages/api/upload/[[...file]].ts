@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Server } from "@tus/server";
 import { hashFilename } from "@/lib/hash-filename";
-import CONSTANTS from "@/lib/constants";
+// import CONSTANTS from "@/lib/constants";
 import storage from "@/lib/storage";
 
 /**
