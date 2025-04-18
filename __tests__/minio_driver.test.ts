@@ -1,7 +1,9 @@
+import CONSTANTS from "@/lib/constants";
 import { MinioDriver } from "@/lib/data-store/minio";
 
 describe("Minio Data Store Driver", () => {
   let datastore = new MinioDriver();
+
   it("initial constructor", () => {
     expect(datastore).toBeInstanceOf(MinioDriver);
   });

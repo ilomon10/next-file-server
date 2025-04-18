@@ -1,6 +1,7 @@
 import { FileStore } from "@tus/file-store";
 import { S3Store } from "@tus/s3-store";
 import CONSTANTS from "./constants";
+import nodepath from "node:path/posix";
 import { LocalFileSystemDriver } from "./data-store/local-file-system";
 import { MinioDriver } from "./data-store/minio";
 
@@ -20,7 +21,9 @@ const tus_s3_store = new S3Store({
   },
 });
 
-const tus_file_store = new FileStore({ directory: "./files" });
+const tus_file_store = new FileStore({
+  directory: "./",
+});
 
 export const tus_storage =
   CONSTANTS.STORAGE_TYPE === "local" ? tus_file_store : tus_s3_store;
@@ -33,7 +36,11 @@ const storage = {
   client_storage: client_storage,
   tus_storage: tus_storage,
 
-  directory: CONSTANTS.STORAGE_TYPE === "local" ? "files" : "coba_files",
+  directory: CONSTANTS.STORAGE_DIRECTORY,
+
+  join(...paths: string[]) {
+    return nodepath.join(this.directory, ...paths);
+  },
 };
 
 export default storage;

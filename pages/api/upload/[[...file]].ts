@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Server } from "@tus/server";
-import { FileStore } from "@tus/file-store";
-import { S3Store } from "@tus/s3-store";
 import { hashFilename } from "@/lib/hash-filename";
-import { default as node_path } from "node:path";
 import CONSTANTS from "@/lib/constants";
 import storage from "@/lib/storage";
 
@@ -29,12 +26,11 @@ const tusServer = new Server({
   namingFunction(req, metadata) {
     const id = hashFilename(metadata?.filename as string);
     const folder = metadata?.folder || "";
-    return node_path.posix.join(storage.directory, folder, id);
+    return storage.join(folder, id);
   },
   generateUrl(req, options) {
     const { proto, host, path } = options;
     const id = Buffer.from(options.id, "utf-8").toString("base64url");
-    // console.log("generateUrl", options, id, `${proto}://${host}${path}/${id}`);
     return `${proto}://${host}${path}/${id}`;
   },
   getFileIdFromRequest(req, lastPath) {
@@ -44,7 +40,6 @@ const tusServer = new Server({
     const result = Buffer.from(lastPath as string, "base64url").toString(
       "utf-8"
     );
-    // console.log("getFileIdFromRequest", lastPath, result);
     return result;
   },
   async onUploadCreate(req, res, upload) {
@@ -66,8 +61,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const result = await tusServer.handle(req, res);
-
-  console.log((result as any).message);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   res.status((result as any).status).end();

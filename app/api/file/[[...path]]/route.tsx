@@ -9,7 +9,8 @@ type METHOD_PARAMS = { params: { path: string[] } };
 
 export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
   let file_path_raw = params.path || [];
-  file_path_raw = [storage.directory, ...file_path_raw];
+
+  file_path_raw = storage.join(...file_path_raw).split("/");
   try {
     let file_type = await checkFileType(file_path_raw);
     if (file_type === null && file_path_raw.length === 1) {
@@ -92,7 +93,6 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    // console.log(err);
     return NextResponse.json(
       { status: 500, code: err.code, message: err.message || err.code },
       { status: 500 }
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
 
 export async function DELETE(req: NextRequest, { params }: METHOD_PARAMS) {
   let file_path_raw = params.path || [];
-  file_path_raw = [storage.directory, ...file_path_raw];
+  file_path_raw = storage.join(...file_path_raw).split("/");
   if (!params.path) {
     return Response.json(
       { status: 400, message: "Bad request" },

@@ -2,13 +2,14 @@
 const nextConfig = {
   output: "standalone",
   env: {
-    site_url: process.env.SITE_URL,
-    app_name: process.env.APP_NAME,
-    storage_type: process.env.STORAGE_TYPE,
-    minio_bucket: process.env.MINIO_BUCKET,
-    minio_access_key: process.env.MINIO_ACCESS_KEY,
-    minio_secret_key: process.env.MINIO_SECRET_KEY,
-    minio_endpoint: process.env.MINIO_ENDPOINT,
+    SITE_URL: process.env.SITE_URL,
+    APP_NAME: process.env.APP_NAME,
+    STORAGE_TYPE: process.env.STORAGE_TYPE,
+    STORAGE_DIRECTORY: process.env.STORAGE_DIRECTORY,
+    MINIO_BUCKET: process.env.MINIO_BUCKET,
+    MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
+    MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
+    MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
   },
 };
 

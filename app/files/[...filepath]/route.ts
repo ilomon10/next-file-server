@@ -14,11 +14,7 @@ export const GET = async (
 
   const hashed_filename = hashFilename(file_name);
 
-  const bin_filepath = path.posix.join(
-    storage.directory,
-    ...full_path.reverse(),
-    hashed_filename
-  );
+  const bin_filepath = storage.join(...full_path.reverse(), hashed_filename);
   const json_filepath = `${bin_filepath}${
     CONSTANTS.STORAGE_TYPE === "local" ? ".json" : ".info"
   }`;

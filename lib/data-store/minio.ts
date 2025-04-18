@@ -1,22 +1,18 @@
-import { BucketItem, Client as MinioClient, S3Error } from "minio";
-import nodepath from "node:path";
+import { BucketItem, Client as MinioClient } from "minio";
 import CONSTANTS from "../constants";
 import { DataStoreDriver, Dirent } from "./driver";
 
 const MINIO_URL = new URL(CONSTANTS.MINIO_ENDPOINT);
-
-const minio_client = new MinioClient({
-  endPoint: MINIO_URL.hostname,
-  port: 80,
-  region: "id-tuminting",
-  useSSL: false,
-  accessKey: CONSTANTS.MINIO_ACCESS_KEY,
-  secretKey: CONSTANTS.MINIO_SECRET_KEY,
-});
-
 export class MinioDriver implements DataStoreDriver {
   constructor() {
-    this.client = minio_client;
+    this.client = new MinioClient({
+      endPoint: MINIO_URL.hostname,
+      port: 80,
+      region: "id-tuminting",
+      useSSL: false,
+      accessKey: CONSTANTS.MINIO_ACCESS_KEY,
+      secretKey: CONSTANTS.MINIO_SECRET_KEY,
+    });
     this.bucket = CONSTANTS.MINIO_BUCKET || "/";
   }
 
@@ -24,7 +20,6 @@ export class MinioDriver implements DataStoreDriver {
   private client: MinioClient;
 
   async mkdir(path: string) {
-    console.log(path);
     await this.client.putObject(
       this.bucket,
       `${path}/.placeholder`,
