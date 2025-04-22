@@ -5,9 +5,9 @@ import CONSTANTS from "@/lib/constants";
 
 export const GET = async (
   req: NextRequest,
-  props: { params: { filepath: string[] } }
+  props: { params: Promise<{ filepath: string[] }> }
 ) => {
-  const { filepath } = props.params;
+  const { filepath } = (await props.params);
 
   const [file_name, ...full_path] = filepath.reverse();
 

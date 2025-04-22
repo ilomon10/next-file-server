@@ -5,9 +5,10 @@ import { hashFilename } from "@/lib/hash-filename";
 import storage, { client_storage } from "@/lib/storage";
 import CONSTANTS from "@/lib/constants";
 
-type METHOD_PARAMS = { params: { path: string[] } };
+type METHOD_PARAMS = { params: Promise<{ path: string[] }> };
 
-export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
+export async function GET(req: NextRequest, props: METHOD_PARAMS) {
+  const params = await props.params;
   let file_path_raw = params.path || [];
 
   file_path_raw = storage.join(...file_path_raw).split("/");
@@ -101,7 +102,8 @@ export async function GET(req: NextRequest, { params }: METHOD_PARAMS) {
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: METHOD_PARAMS) {
+export async function DELETE(req: NextRequest, props: METHOD_PARAMS) {
+  const params = await props.params;
   let file_path_raw = params.path || [];
   file_path_raw = storage.join(...file_path_raw).split("/");
   if (!params.path) {

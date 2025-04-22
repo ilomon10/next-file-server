@@ -24,6 +24,10 @@ import {
 } from "@/components/ui/sheet";
 import { APP_NAME, SITE_URL } from "@/lib/constants";
 import Image from "next/image";
+import Link from "next/link";
+
+import type { JSX } from "react";
+import { Slot } from "@radix-ui/react-slot";
 
 interface MenuItem {
   title: string;
@@ -109,12 +113,12 @@ const Navbar = ({
               </NavigationMenu>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.text}</a>
+              <Link href={auth.login.url}>{auth.login.text}</Link>
             </Button>
             <Button asChild size="sm">
-              <a href={auth.signup.url}>{auth.signup.text}</a>
+              <Link href={auth.signup.url}>{auth.signup.text}</Link>
             </Button>
           </div>
         </nav>
@@ -175,10 +179,10 @@ const Navbar = ({
                   </div>
                   <div className="flex flex-col gap-3">
                     <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.text}</a>
+                      <Link href={auth.login.url}>{auth.login.text}</Link>
                     </Button>
                     <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.text}</a>
+                      <Link href={auth.signup.url}>{auth.signup.text}</Link>
                     </Button>
                   </div>
                 </div>

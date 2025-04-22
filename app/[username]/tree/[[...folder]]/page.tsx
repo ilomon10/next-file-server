@@ -1,10 +1,12 @@
 import { DocumentMap } from "@/components/blocks/document-map";
 import { DocumentList } from "@/components/blocks/document-list";
 
-export default function Home(props: {
-  params: { folder: string[]; username: string };
-}) {
-  const { folder, username } = props.params;
+export default async function Home(
+  props: {
+    params: Promise<{ folder: string[]; username: string }>;
+  }
+) {
+  const { folder, username } = (await props.params);
   const baseurl = `/${username}/tree`;
 
   return (

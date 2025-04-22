@@ -5,11 +5,11 @@ import byteSize from "byte-size";
 import { Metadata } from "next";
 
 type BlobRouteProps = {
-  params: { filepath: string[]; username: string };
+  params: Promise<{ filepath: string[]; username: string }>;
 };
 
 export default async function BlobRoute(props: BlobRouteProps) {
-  const { filepath, username } = props.params;
+  const { filepath, username } = (await props.params);
   const file_path = filepath.join("/");
   const file = (await file_collection().get(file_path)).data[0];
   if (file.type !== "file") return <div>File not found</div>;
@@ -33,9 +33,8 @@ export default async function BlobRoute(props: BlobRouteProps) {
   );
 }
 
-export async function generateMetadata({
-  params,
-}: BlobRouteProps): Promise<Metadata> {
+export async function generateMetadata(props: BlobRouteProps): Promise<Metadata> {
+  const params = await props.params;
   return {
     title: `${params.filepath.join("/")} at ${params.username}`,
   };
