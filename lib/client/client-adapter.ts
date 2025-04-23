@@ -43,7 +43,19 @@ export const postFolder = async (folder: string) => {
 
 export const file_collection = () => {
   return {
-    async get(folder: string) {
+    async get(path: string) {
+      try {
+        const response = await apiClient.get<{
+          total: number;
+          data: Extract<FileOrFolder, { type: "file" }>[];
+        }>(`/files/${path}`);
+        return response.data.data[0];
+      } catch (error) {
+        console.error("Error get file:", error);
+        throw error;
+      }
+    },
+    async list(folder: string) {
       try {
         const response = await apiClient.get<{
           total: number;

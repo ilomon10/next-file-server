@@ -12,6 +12,7 @@ export function createUppy(meta?: Metadata) {
   }).use(Tus, {
     endpoint: `${SITE_URL}/api/upload`,
     allowedMetaFields: true,
+    chunkSize: 1024 * 1024 * 5,
     headers: {
       "X-Forwarded-Proto": SITE_PROTO,
       "X-Real-Proto": SITE_PROTO,

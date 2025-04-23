@@ -24,7 +24,7 @@ export const DocumentList: React.FC<{
   const { data, refetch, isLoading } = useQuery<DocumentFile[]>({
     queryKey: [folder, "file-list"],
     queryFn: async () => {
-      const files = await file_collection().get(folderString);
+      const files = await file_collection().list(folderString);
 
       const result = files.data.map<DocumentFile>((file) => {
         let file_url = path.posix.join(baseurl, file.parentPath, file.name);

@@ -62,7 +62,7 @@ interface NavbarProps {
 const Navbar = ({
   logo = {
     url: SITE_URL || "https://www.example.com",
-    src: "https://www.shadcnblocks.com/images/block/block-1.svg",
+    src: "/logo.svg",
     alt: "logo",
     title: APP_NAME || "nextjs file server",
   },

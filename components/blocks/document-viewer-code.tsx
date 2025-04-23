@@ -1,3 +1,6 @@
+"use client";
+
+import "@/styles/code-block.css";
 import { IDocument } from "@cyntler/react-doc-viewer";
 import React from "react";
 import CodeToBlock from "react-shiki";
@@ -21,7 +24,12 @@ export const DocumentViewerCode: React.FC<{
   }, [document.uri]);
 
   return (
-    <CodeToBlock language={"html"} theme={"github-light"}>
+    <CodeToBlock
+      language={document.fileType}
+      theme={"github-light"}
+      className="code-block"
+      showLanguage={false}
+    >
       {code}
     </CodeToBlock>
   );
