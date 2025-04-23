@@ -1,11 +1,7 @@
 "use client";
 
 import React from "react";
-import DocViewer, {
-  DocViewerRenderers,
-  IDocument,
-  PDFRenderer,
-} from "@cyntler/react-doc-viewer";
+import DocViewer, { IDocument, PDFRenderer } from "@cyntler/react-doc-viewer";
 
 import "@cyntler/react-doc-viewer/dist/index.css";
 import PNGRenderer from "./document-renderer/png-renderer";

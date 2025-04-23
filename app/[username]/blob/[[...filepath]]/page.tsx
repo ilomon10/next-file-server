@@ -2,6 +2,7 @@ import { DocumentMap } from "@/components/blocks/document-map";
 import { DocumentStaticViewer } from "@/components/blocks/document-static-viewer";
 import { Button } from "@/components/ui/button";
 import { file_collection } from "@/lib/client/client-adapter";
+import CONSTANTS from "@/lib/constants";
 import byteSize from "byte-size";
 import { Metadata } from "next";
 
@@ -33,7 +34,7 @@ export default async function BlobRoute(props: BlobRouteProps) {
                 {byteSize(file.size).toString()}
               </span>
               <Button variant={"outline"} size={"sm"}>
-                Raw
+                <a href={`${CONSTANTS.SITE_URL}/files/blob/${filepath}`}>Raw</a>
               </Button>
             </div>
           }

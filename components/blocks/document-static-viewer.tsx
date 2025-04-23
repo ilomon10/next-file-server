@@ -23,7 +23,9 @@ export const DocumentStaticViewer: React.FC<{
   const supported_view = SUPPORTED_TYPE[file_type] ?? SUPPORTED_TYPE["txt"];
 
   const resolveView = () => {
-    const resolved_type = supported_view.includes(viewtype as any)
+    const resolved_type = supported_view.includes(
+      viewtype as unknown as ViewType
+    )
       ? viewtype
       : supported_view[0];
 
@@ -39,7 +41,7 @@ export const DocumentStaticViewer: React.FC<{
 
   return (
     <div className="rounded-md border">
-      <div className="border-b px-3 py-2 flex items-center">
+      <div className="border-b px-4 py-2 flex items-center">
         {supported_view.length > 1 && (
           <div className="mr-2">
             {supported_view.map((v) => {
@@ -59,7 +61,6 @@ export const DocumentStaticViewer: React.FC<{
 };
 
 type ViewType = "preview" | "code" | "blame";
-type MimeType = keyof typeof SUPPORTED_TYPE;
 
 const SUPPORTED_TYPE: Record<string, ViewType[]> = {
   // Code and markup
