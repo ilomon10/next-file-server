@@ -10,6 +10,7 @@ const nextConfig = {
     MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
     MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
     MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
+    DEBUG_LEVEL: process.env.DEBUG_LEVEL,
   },
 };
 

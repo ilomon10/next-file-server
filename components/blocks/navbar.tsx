@@ -25,15 +25,13 @@ import {
 import { APP_NAME, SITE_URL } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
-
-import type { JSX } from "react";
-import { Slot } from "@radix-ui/react-slot";
+import React from "react";
 
 interface MenuItem {
   title: string;
   url: string;
   description?: string;
-  icon?: JSX.Element;
+  icon?: React.JSX.Element;
   items?: MenuItem[];
 }
 

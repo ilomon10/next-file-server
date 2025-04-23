@@ -3,6 +3,9 @@ import { Server } from "@tus/server";
 import { hashFilename } from "@/lib/hash-filename";
 import CONSTANTS from "@/lib/constants";
 import storage from "@/lib/storage";
+import { logger as createLog } from "@/lib/logger";
+
+const logger = createLog.child({ module: "pages/api/upload" });
 
 /**
  * !Important. This will tell Next.js NOT Parse the body as tus requires
@@ -31,7 +34,7 @@ const tusServer = new Server({
     const id = Buffer.from(options.id, "utf-8").toString("base64url");
     const protocol =
       req.headers["x-real-proto"] || req.headers["x-forwarded-proto"] || proto;
-    console.log(
+    logger.info(
       "generateUrl",
       protocol,
       { proto, host, path, id },
@@ -57,7 +60,6 @@ const tusServer = new Server({
     // You can optionally return metadata to override the upload metadata,
     // such as `{ storagePath: "/upload/123abc..." }`
     // const extraMeta = getExtraMetadata(req) // your logic
-    // console.log(upload);
     return { res, metadata: { ...upload.metadata } };
   },
 });

@@ -6,6 +6,7 @@ export const MINIO_BUCKET = process.env.MINIO_BUCKET as string;
 export const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY as string;
 export const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY as string;
 export const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT as string;
+export const DEBUG_LEVEL = process.env.DEBUG_LEVEL as string;
 
 export const SITE_PROTO = SITE_URL.startsWith("https") ? "https" : "http";
 
@@ -18,6 +19,7 @@ const CONSTANTS = {
   MINIO_ACCESS_KEY,
   MINIO_SECRET_KEY,
   MINIO_ENDPOINT,
+  DEBUG_LEVEL,
 
   SITE_PROTO,
 };

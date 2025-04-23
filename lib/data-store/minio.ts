@@ -101,7 +101,6 @@ export class MinioDriver implements DataStoreDriver {
   async exists(path: string) {
     try {
       const item = await this.stat(path);
-      // console.log(item);
       return typeof item !== "undefined";
     } catch (error: unknown) {
       const errorCode: string =
